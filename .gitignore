@@ -1,0 +1,9 @@
+.idea
+bin/
+obj/
+/packages/
+riderModule.iml
+/_ReSharper.Caches/
+lib/EOS/*
+!lib/EOS/EOS.csproj
+!lib/EOS/README.md

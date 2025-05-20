@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Backdash", "..\Backdash\src\Backdash\Backdash.csproj", "{62EF45CB-7233-45A0-8524-2C01D55BD7C7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EOS", "lib\EOS\EOS.csproj", "{DFBAA370-01E1-46FC-B227-94F669D285CA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Backdash.EOS", "src\Backdash.EOS.csproj", "{B798192E-A136-4174-99C6-99646F69DDDA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{62EF45CB-7233-45A0-8524-2C01D55BD7C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{62EF45CB-7233-45A0-8524-2C01D55BD7C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{62EF45CB-7233-45A0-8524-2C01D55BD7C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{62EF45CB-7233-45A0-8524-2C01D55BD7C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DFBAA370-01E1-46FC-B227-94F669D285CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFBAA370-01E1-46FC-B227-94F669D285CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DFBAA370-01E1-46FC-B227-94F669D285CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DFBAA370-01E1-46FC-B227-94F669D285CA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B798192E-A136-4174-99C6-99646F69DDDA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B798192E-A136-4174-99C6-99646F69DDDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B798192E-A136-4174-99C6-99646F69DDDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B798192E-A136-4174-99C6-99646F69DDDA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
