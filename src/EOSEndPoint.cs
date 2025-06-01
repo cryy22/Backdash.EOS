@@ -5,10 +5,15 @@ namespace Backdash.EOS;
 
 public class EOSEndPoint : EndPoint
 {
-	public ProductUserId Id;
+	public EOSIdentity Identity;
 
-	public EOSEndPoint(ProductUserId id)
+	public EOSEndPoint(EOSIdentity identity)
 	{
-		Id = id;
+		Identity = identity;
+	}
+
+	public override SocketAddress Serialize()
+	{
+		return Identity.ToSocketAddress();
 	}
 }

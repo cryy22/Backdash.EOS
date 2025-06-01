@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Backdash\src\Backdash\Backdash.csproj" />
     <ProjectReference Include="..\..\EOS\EOS.csproj" />
   </ItemGroup>
 
