@@ -4,11 +4,13 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Backdash\src\Backdash\Backdash.csproj" />
     <ProjectReference Include="..\..\EOS\EOS.csproj" />
+    <ProjectReference Include="..\..\MoonWorks\MoonWorks.csproj" />
   </ItemGroup>
 
 </Project>
