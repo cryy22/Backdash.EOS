@@ -6,9 +6,9 @@ using Epic.OnlineServices;
 
 namespace Backdash.EOS;
 
-public struct EOSIdentity(ProductUserId id)
+public struct EOSIdentity(int idIndex)
 {
-	public ProductUserId Id = id;
+	public int IdIndex = idIndex;
 }
 
 public static class EOSIdentityExtensions

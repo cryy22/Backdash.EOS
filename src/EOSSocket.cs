@@ -6,7 +6,7 @@ using Epic.OnlineServices.P2P;
 
 namespace Backdash.EOS;
 
-public class EOSSocket(P2PInterface p2pInterface, SocketId socketId, EOSIdentity localIdentity) : IPeerSocket
+public class EOSSocket(P2PInterface p2pInterface, SocketId socketId, ProductUserId[] productUserIds, EOSIdentity localIdentity) : IPeerSocket
 {
 	public AddressFamily AddressFamily => AddressFamily.Unspecified;
 	public int Port { get; }
@@ -19,7 +19,7 @@ public class EOSSocket(P2PInterface p2pInterface, SocketId socketId, EOSIdentity
 	{
 		var receivePacketOptions = new ReceivePacketOptions
 		{
-			LocalUserId = localIdentity.Id,
+			LocalUserId = productUserIds[localIdentity.IdIndex],
 			MaxDataSizeBytes = (uint) buffer.Length,
 		};
 
@@ -37,7 +37,14 @@ public class EOSSocket(P2PInterface p2pInterface, SocketId socketId, EOSIdentity
 			return ValueTask.FromException<int>(new Exception(result.ToString()));
 		}
 		ref var senderIdentity = ref EOSIdentityExtensions.FromSocketAddress(address);
-		senderIdentity.Id = senderId;
+		for (var i = 0; i < productUserIds.Length; i++)
+		{
+			if (senderId == productUserIds[i])
+			{
+				senderIdentity.IdIndex = i;
+				break;
+			}
+		}
 
 		return ValueTask.FromResult((int) bytesWritten);
 	}
@@ -59,8 +66,8 @@ public class EOSSocket(P2PInterface p2pInterface, SocketId socketId, EOSIdentity
 		{
 			var sendPacketOptions = new SendPacketOptions
 			{
-				LocalUserId = localIdentity.Id,
-				RemoteUserId = recipientIdentity.Id,
+				LocalUserId = productUserIds[localIdentity.IdIndex],
+				RemoteUserId = productUserIds[recipientIdentity.IdIndex],
 				SocketId = socketId,
 				Channel = 0,
 				AllowDelayedDelivery = false,
