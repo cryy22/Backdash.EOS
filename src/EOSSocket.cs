@@ -8,6 +8,8 @@ namespace Backdash.EOS;
 
 public class EOSSocket(P2PInterface p2pInterface, SocketId socketId, ProductUserId[] productUserIds, EOSIdentity localIdentity) : IPeerSocket
 {
+	private const int _maxConsecutiveReceiveAttempts = 10;
+
 	public AddressFamily AddressFamily => AddressFamily.Unspecified;
 	public int Port { get; }
 
@@ -23,19 +25,33 @@ public class EOSSocket(P2PInterface p2pInterface, SocketId socketId, ProductUser
 			MaxDataSizeBytes = (uint) buffer.Length,
 		};
 
-		var result = p2pInterface.ReceivePacket(
-			ref receivePacketOptions,
-			out var senderId,
-			out var _,
-			out var _,
-			buffer.Span,
-			out var bytesWritten
-		);
+		var result = Result.NotFound;
+
+		ProductUserId senderId = null;
+		uint bytesWritten = 0;
+
+		for (var i = 0; i < _maxConsecutiveReceiveAttempts; i++)
+		{
+			result = p2pInterface.ReceivePacket(
+				ref receivePacketOptions,
+				out senderId,
+				out _,
+				out _,
+				buffer.Span,
+				out bytesWritten
+			);
+
+			if (result == Result.Success)
+			{
+				break;
+			}
+		}
 
 		if (result != Result.Success)
 		{
 			return ValueTask.FromException<int>(new Exception(result.ToString()));
 		}
+
 		ref var senderIdentity = ref EOSIdentityExtensions.FromSocketAddress(address);
 		for (var i = 0; i < productUserIds.Length; i++)
 		{
@@ -46,6 +62,7 @@ public class EOSSocket(P2PInterface p2pInterface, SocketId socketId, ProductUser
 			}
 		}
 
+		Console.WriteLine("RECEIVE successful");
 		return ValueTask.FromResult((int) bytesWritten);
 	}
 
@@ -83,6 +100,7 @@ public class EOSSocket(P2PInterface p2pInterface, SocketId socketId, ProductUser
 				return ValueTask.FromException<int>(new Exception(result.ToString()));
 			}
 
+			Console.WriteLine("SEND successful");
 			return ValueTask.FromResult(buffer.Length);
 		}
 	}
