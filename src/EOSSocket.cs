@@ -8,7 +8,9 @@ namespace Backdash.EOS;
 
 public class EOSSocket(P2PInterface p2pInterface, SocketId socketId, ProductUserId[] productUserIds, EOSIdentity localIdentity) : IPeerSocket
 {
-	private const int _maxConsecutiveReceiveAttempts = 10;
+	private const int _maxConsecutiveReceiveAttempts = 100;
+	// TODO: nasty. configure as fraction of framerate or exponential backoff or something
+	private static TimeSpan _timePerAttempt = TimeSpan.FromMilliseconds(50f);
 
 	public AddressFamily AddressFamily => AddressFamily.Unspecified;
 	public int Port { get; }
@@ -45,6 +47,9 @@ public class EOSSocket(P2PInterface p2pInterface, SocketId socketId, ProductUser
 			{
 				break;
 			}
+
+			Console.WriteLine($"Failed receive: {result} (attempt #{i+1})");
+			Thread.Sleep(_timePerAttempt);
 		}
 
 		if (result != Result.Success)
