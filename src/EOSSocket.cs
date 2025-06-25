@@ -23,16 +23,13 @@ public class EOSSocket(P2PInterface p2pInterface, SocketId socketId, ProductUser
 			MaxDataSizeBytes = (uint) buffer.Length,
 		};
 
-		ProductUserId senderId = null;
-		uint bytesWritten = 0;
-
 		var result = p2pInterface.ReceivePacket(
 			ref receivePacketOptions,
-			out senderId,
-			out _,
-			out _,
+			out ProductUserId senderId,
+			out SocketId _,
+			out byte _,
 			buffer.Span,
-			out bytesWritten
+			out uint bytesWritten
 		);
 
 		if (result == Result.NotFound)
@@ -45,7 +42,7 @@ public class EOSSocket(P2PInterface p2pInterface, SocketId socketId, ProductUser
 			return ValueTask.FromException<int>(new Exception(result.ToString()));
 		}
 
-		ref var senderIdentity = ref EOSIdentityExtensions.FromSocketAddress(address);
+		ref EOSIdentity senderIdentity = ref EOSIdentityExtensions.FromSocketAddress(address);
 		for (var i = 0; i < productUserIds.Length; i++)
 		{
 			if (senderId == productUserIds[i])
