@@ -106,7 +106,7 @@ public class EOSSocket(P2PInterface p2pInterface, SocketId socketId, ProductUser
 			RemoteUserId = productUserIds[recipientIdentity.IdIndex],
 			SocketId = socketId,
 			Channel = 0,
-			AllowDelayedDelivery = false,
+			AllowDelayedDelivery = true,
 			Reliability = PacketReliability.ReliableOrdered,
 			DisableAutoAcceptConnection = false,
 			Data = sendSeg,
