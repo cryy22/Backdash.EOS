@@ -13,7 +13,6 @@ public class EOSSocket(P2PInterface p2pInterface, SocketId socketId, ProductUser
 
 	private byte[] _receiveAry = new byte[256];
 	private byte[] _sendAry = new byte[256];
-	private SocketId _dummySocketId = new();
 
 	public ValueTask<int> ReceiveFromAsync(
 		Memory<byte> buffer,
@@ -59,10 +58,11 @@ public class EOSSocket(P2PInterface p2pInterface, SocketId socketId, ProductUser
 		};
 
 		ProductUserId senderId = new ProductUserId();
+		SocketId rcvSocketId = new SocketId();
 		result = p2pInterface.ReceivePacket(
 			ref receivePacketOptions,
 			ref senderId,
-			ref _dummySocketId,
+			ref rcvSocketId,
 			out byte _,
 			receiveSeg,
 			out uint bytesWritten
