@@ -11,8 +11,9 @@ public class EOSSocket(P2PInterface p2pInterface, SocketId socketId, ProductUser
 	public AddressFamily AddressFamily => AddressFamily.Unspecified;
 	public int Port { get; }
 
-	private byte[] _receiveAry = new byte[4096];
-	private byte[] _sendAry = new byte[4096];
+	private byte[] _receiveAry = new byte[256];
+	private byte[] _sendAry = new byte[256];
+	private SocketId _dummySocketId = new();
 
 	public ValueTask<int> ReceiveFromAsync(
 		Memory<byte> buffer,
@@ -20,12 +21,28 @@ public class EOSSocket(P2PInterface p2pInterface, SocketId socketId, ProductUser
 		CancellationToken cancellationToken
 	)
 	{
+		var localUserId = productUserIds[localIdentity.IdIndex];
+
+		var sizeOptions = new GetNextReceivedPacketSizeOptions
+		{
+			LocalUserId = localUserId,
+		};
+		var result = p2pInterface.GetNextReceivedPacketSize(ref sizeOptions, out uint nextPacketSize);
+		if (result == Result.NotFound)
+		{
+			return ValueTask.FromResult(0);
+		}
+		if (result != Result.Success)
+		{
+			return ValueTask.FromException<int>(new Exception(result.ToString()));
+		}
+
 		Console.WriteLine("RECEIVE start");
-		if (_receiveAry.Length < buffer.Length)
+		if (_receiveAry.Length < nextPacketSize)
 		{
 			Console.WriteLine($"resizing rcv array. initial length: {_receiveAry.Length}");
 			var targetLength = _receiveAry.Length;
-			while (targetLength < buffer.Length)
+			while (targetLength < nextPacketSize)
 			{
 				targetLength *= 2;
 			}
@@ -33,20 +50,19 @@ public class EOSSocket(P2PInterface p2pInterface, SocketId socketId, ProductUser
 			Array.Resize(ref _receiveAry, targetLength);
 			Console.WriteLine($"array resized. new length: {_receiveAry.Length}");
 		}
-		var receiveSeg = new ArraySegment<byte>(_receiveAry, 0, buffer.Length);
+		var receiveSeg = new ArraySegment<byte>(_receiveAry, 0, (int) nextPacketSize);
 
 		var receivePacketOptions = new ReceivePacketOptions
 		{
-			LocalUserId = productUserIds[localIdentity.IdIndex],
-			MaxDataSizeBytes = (uint) buffer.Length,
+			LocalUserId = localUserId,
+			MaxDataSizeBytes = nextPacketSize,
 		};
 
 		ProductUserId senderId = new ProductUserId();
-		SocketId socketId = new SocketId();
-		var result = p2pInterface.ReceivePacket(
+		result = p2pInterface.ReceivePacket(
 			ref receivePacketOptions,
 			ref senderId,
-			ref socketId,
+			ref _dummySocketId,
 			out byte _,
 			receiveSeg,
 			out uint bytesWritten
