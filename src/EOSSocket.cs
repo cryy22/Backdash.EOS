@@ -79,7 +79,7 @@ public class EOSSocket(P2PInterface p2pInterface, SocketId socketId, ProductUser
 		throw new NotImplementedException();
 	}
 
-	public unsafe ValueTask<int> SendToAsync(
+	public ValueTask<int> SendToAsync(
 		ReadOnlyMemory<byte> buffer,
 		SocketAddress socketAddress,
 		CancellationToken cancellationToken
@@ -99,7 +99,6 @@ public class EOSSocket(P2PInterface p2pInterface, SocketId socketId, ProductUser
 		buffer.Span.CopyTo(sendSeg.AsSpan());
 
 		EOSIdentity recipientIdentity = EOSIdentityExtensions.FromSocketAddress(socketAddress);
-
 		var sendPacketOptions = new SendPacketOptions
 		{
 			LocalUserId = productUserIds[localIdentity.IdIndex],
