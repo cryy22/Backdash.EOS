@@ -11,8 +11,8 @@ public class EOSSocket(P2PInterface p2pInterface, SocketId socketId, ProductUser
 	public AddressFamily AddressFamily => AddressFamily.Unspecified;
 	public int Port { get; }
 
-	private byte[] _receiveAry = new byte[256];
-	private byte[] _sendAry = new byte[256];
+	private byte[] _receiveAry = new byte[4096];
+	private byte[] _sendAry = new byte[4096];
 
 	public ValueTask<int> ReceiveFromAsync(
 		Memory<byte> buffer,
@@ -20,15 +20,18 @@ public class EOSSocket(P2PInterface p2pInterface, SocketId socketId, ProductUser
 		CancellationToken cancellationToken
 	)
 	{
+		Console.WriteLine("RECEIVE start");
 		if (_receiveAry.Length < buffer.Length)
 		{
+			Console.WriteLine($"resizing rcv array. initial length: {_receiveAry.Length}");
 			var targetLength = _receiveAry.Length;
-			while (targetLength > buffer.Length)
+			while (targetLength < buffer.Length)
 			{
 				targetLength *= 2;
 			}
 
 			Array.Resize(ref _receiveAry, targetLength);
+			Console.WriteLine($"array resized. new length: {_receiveAry.Length}");
 		}
 		var receiveSeg = new ArraySegment<byte>(_receiveAry, 0, buffer.Length);
 
@@ -59,6 +62,7 @@ public class EOSSocket(P2PInterface p2pInterface, SocketId socketId, ProductUser
 		{
 			return ValueTask.FromException<int>(new Exception(result.ToString()));
 		}
+		Console.WriteLine("RECEIVE successful");
 
 		ref EOSIdentity senderIdentity = ref EOSIdentityExtensions.FromSocketAddress(address);
 		for (var i = 0; i < productUserIds.Length; i++)
@@ -70,7 +74,6 @@ public class EOSSocket(P2PInterface p2pInterface, SocketId socketId, ProductUser
 			}
 		}
 
-		Console.WriteLine("RECEIVE successful");
 		return ValueTask.FromResult((int) bytesWritten);
 	}
 
@@ -85,15 +88,18 @@ public class EOSSocket(P2PInterface p2pInterface, SocketId socketId, ProductUser
 		CancellationToken cancellationToken
 	)
 	{
+		Console.WriteLine("SEND start");
 		if (_sendAry.Length < buffer.Length)
 		{
+			Console.WriteLine($"resizing send array. initial length: {_sendAry.Length}");
 			var targetLength = _sendAry.Length;
-			while (targetLength > buffer.Length)
+			while (targetLength < buffer.Length)
 			{
 				targetLength *= 2;
 			}
 
 			Array.Resize(ref _sendAry, targetLength);
+			Console.WriteLine($"array resized. new length: {_sendAry.Length}");
 		}
 		var sendSeg = new ArraySegment<byte>(_sendAry, 0, buffer.Length);
 		buffer.Span.CopyTo(sendSeg.AsSpan());
